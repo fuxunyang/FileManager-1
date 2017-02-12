@@ -43,7 +43,6 @@
             // 
             // Form1
             // 
-           
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
@@ -53,6 +52,7 @@
             this.Name = "Form1";
             this.RightToLeftLayout = true;
             this.Text = "File Manager";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
         }
 
@@ -89,6 +89,8 @@
         private void InitializeComponent()
         {
             this.button = new System.Windows.Forms.Button();
+            this.edit_2 = new UserEdit();
+            this.edit_2.menuStrip.SuspendLayout();
             this.SuspendLayout();
             //
             //Button2
@@ -101,6 +103,19 @@
             this.button.UseVisualStyleBackColor = true;
             this.button.Click += new System.EventHandler(this.button_Click);
             //
+            //UserEdit (Need Update!)
+            //
+            this.edit_2.추가ToolStripMenuItem.Click += new System.EventHandler(this.Edit_Add_Click);
+
+            System.Windows.Forms.MenuItem edit_Delete, edit_ChangeName;
+
+            edit_Delete = new System.Windows.Forms.MenuItem
+                                ("삭제", new System.EventHandler(this.Edit_Delete_Click));
+            edit_ChangeName = new System.Windows.Forms.MenuItem
+                                ("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
+            this.userTab.tabControl.ContextMenu = new System.Windows.Forms.ContextMenu
+                                (new System.Windows.Forms.MenuItem[] { edit_Delete, edit_ChangeName });
+            //
             //Form2
             //
             this.components = new System.ComponentModel.Container();
@@ -109,10 +124,17 @@
             this.ClientSize = new System.Drawing.Size(584, 261);
             this.Name = "Form2";
             this.Text = "sub FileManager";
+            this.Load += new System.EventHandler(this.Form2_Load);
             this.Controls.Add(this.button);
-            
+            // edit_2 is User Class.
+            this.Controls.Add(this.edit_2.menuStrip);
+            this.MainMenuStrip = this.edit_2.menuStrip;
+            this.edit_2.menuStrip.ResumeLayout(false);
+            this.edit_2.menuStrip.PerformLayout();
+            //
         }
         private System.Windows.Forms.Button button;
+        private UserEdit edit_2;
         #endregion
     }
 
