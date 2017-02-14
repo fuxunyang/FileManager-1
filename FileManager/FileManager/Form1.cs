@@ -15,6 +15,7 @@ namespace FileManager
     ////////////////////////////////////////////////////////////////////
     public partial class Form1 : Form
     {
+        private UserPanel userPanel = new UserPanel();
         private bool check_Init = false;
 
         public Form1()
@@ -67,6 +68,9 @@ namespace FileManager
 
         public int MakePanel() //Setting Panel
         {
+            //
+            //Panel Setting
+            //
             System.Windows.Forms.Panel panel = new System.Windows.Forms.Panel();
             panelList.Add(panel);
             panelCurrentIndex = panelList.Count - 1;
@@ -88,37 +92,99 @@ namespace FileManager
     public partial class Form2 : Form
     {
         private UserTab userTab = new UserTab();
+        private bool checkData = true;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
+        private const int TCM_SETMINTABWIDTH = 0x1300 + 49;
 
         public Form2()
         {
             InitializeComponent();
+            if (checkData)
+            {
+                System.Windows.Forms.TabPage tabPage1 = new System.Windows.Forms.TabPage();
+                userTab.tabControl.Controls.Add(tabPage1);
+                userTab.MakeTabPage(tabPage1);
+                tabPage1.Text = "";
+            }
         }
-        //Form2's Set when Load////////////
+        //Form2's Set when Load//
         private void Form2_Load(object sender, EventArgs e)
         {
             this.Controls.Add(userTab.tabControl); //Make TabControl in Form2
         }
-        //Form Close///////////////////////
+        //Form Close//
         private void button_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-        //UserEdit Method/////////////////
-        private void Edit_Add_Click(object sender, EventArgs e)
+        //Edit Button in tab//
+          //Handle Click on Close Button and Add Button
+        private void tabControl_MouseDown(object sender, MouseEventArgs e)
         {
-            this.userTab.MakeTabPage();
+            var lastIndex = this.userTab.tabControl.TabCount - 1;
+            if (this.userTab.tabControl.GetTabRect(lastIndex).Contains(e.Location))
+            {
+                this.userTab.tabControl.TabPages.Insert(lastIndex, "New Tab");
+                this.userTab.tabControl.SelectedIndex = lastIndex;
+                this.userTab.MakeTabPage(this.userTab.tabControl.SelectedTab);
+            }
+            else
+            {
+                for (var i = 0; i < this.userTab.tabControl.TabPages.Count; i++)
+                {
+                    var tabRect = this.userTab.tabControl.GetTabRect(i);
+                    tabRect.Inflate(-2, -2);
+                    var closeImage = Properties.Resources.DeleteButton_Image;
+                    var imageRect = new Rectangle(
+                        (tabRect.Right - closeImage.Width),
+                        tabRect.Top + (tabRect.Height - closeImage.Height) / 2,
+                        closeImage.Width,
+                        closeImage.Height);
+                    if (imageRect.Contains(e.Location))
+                    {
+                        this.userTab.tabControl.TabPages.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
         }
-        private void Edit_Delete_Click(object sender, EventArgs e)
+          //Prevent selection last tab
+        private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            //if(sender.Equals(userTab.tabControl.SelectedTab))
-            userTab.tabControl.TabPages.Remove(userTab.tabControl.SelectedTab);
+            if (e.TabPageIndex == this.userTab.tabControl.TabCount - 1)
+                e.Cancel = true;
         }
-        private void Edit_NameChange_Click(object sender, EventArgs e)
+          //Draw Close Buttton and Add Button
+        private void tabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            //Need Update!
-            userTab.tabControl.SelectedTab.Text = "Changed";
+            var tabPage = this.userTab.tabControl.TabPages[e.Index];
+            var tabRect = this.userTab.tabControl.GetTabRect(e.Index);
+            tabRect.Inflate(-2, -2);
+            if (e.Index == this.userTab.tabControl.TabCount - 1)
+            {
+                var addImage = Properties.Resources.AddButton_Image;
+                e.Graphics.DrawImage(addImage,
+                    tabRect.Left + (tabRect.Width - addImage.Width) ,
+                    tabRect.Top + (tabRect.Height - addImage.Height));
+            }
+            else
+            {
+                var closeImage = Properties.Resources.DeleteButton_Image;
+                e.Graphics.DrawImage(closeImage,
+                    (tabRect.Right - closeImage.Width),
+                    tabRect.Top + (tabRect.Height - closeImage.Height) / 2);
+                TextRenderer.DrawText(e.Graphics, tabPage.Text, tabPage.Font,
+                    tabRect, tabPage.ForeColor, TextFormatFlags.Left);
+            }
         }
-        //////////////////////////////////
+          //Adjust Tab Width individually.
+        private void tabControl_HandleCreated(object sender, EventArgs e)
+        {
+            SendMessage(this.userTab.tabControl.Handle, TCM_SETMINTABWIDTH, IntPtr.Zero, (IntPtr)16);
+        }
+        /////////////////
 
     }
     ////////////////////////////////////////////////////////////////////
@@ -129,43 +195,38 @@ namespace FileManager
     ////////////////////////////////////////////////////////////////////
     public class UserTab  // Make a new Tab
     {
-        public List<TabPage> tabList = new List<TabPage>();
         public System.Windows.Forms.TabControl tabControl = new System.Windows.Forms.TabControl();
-        private int tabListIndex;
 
         public UserTab()  //Setting tabControl
         {
             tabControl.Location = new System.Drawing.Point(39, -2);
-            tabControl.Name = "tabControl1";
+            tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
             tabControl.Size = new System.Drawing.Size(547, 264);
             tabControl.TabIndex = 0;
         }
 
-        public int MakeTabPage() //Make a TabPage in Tab
+        public void MakeTabPage(TabPage tab) //Make a TabPage in Tab
         {
-            System.Windows.Forms.TabPage tab = new System.Windows.Forms.TabPage();
+            //
+            //VScrollBar Setting
+            //
             System.Windows.Forms.VScrollBar vScrollBar = new System.Windows.Forms.VScrollBar();
-            /////////////////////////////////////////////// Add a TabPage in List<TabPag> 
-            tabList.Add(tab);
-            tabListIndex = tabList.Count - 1;
-            /////////////////////////////////////////////// VScrollBar Sertting
-            vScrollBar.Location = new System.Drawing.Point(520, 0);
-            vScrollBar.Name = "vScrollBar" + tabList.Count;
+            vScrollBar.Location = new System.Drawing.Point(524, 0);
+            vScrollBar.Name = "vScrollBar";
             vScrollBar.Size = new System.Drawing.Size(17, 238);
-            vScrollBar.TabIndex = tabList.Count;
-            /////////////////////////////////////////////// tabPage Setting
+            vScrollBar.TabIndex = tab.TabIndex;
+            //
+            //TabPage Setting
+            //
             tab.Location = new System.Drawing.Point(4, 22);
-            tab.Name = "tabPage" + tabList.Count;
+            tab.Name = "TabPage";
             tab.Padding = new System.Windows.Forms.Padding(3);
             tab.Size = new System.Drawing.Size(520, 300);
-            tab.TabIndex = tabListIndex;
-            tab.Text = "tabPage";
+            tab.TabIndex = tab.TabIndex;
+            tab.Text = "New Tab";
             tab.UseVisualStyleBackColor = true;
             tab.Controls.Add(vScrollBar);
-            tabControl.Controls.Add(tab);
-            ///////////////////////////////////////////////
-            return tabListIndex;
         }
     }
     ////////////////////////////////////////////////////////////////////
@@ -177,7 +238,6 @@ namespace FileManager
     public class UserEdit
     {
         public System.Windows.Forms.MenuStrip menuStrip = new System.Windows.Forms.MenuStrip();
-        public System.Windows.Forms.ToolStripMenuItem 추가ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 
         public UserEdit() //Need Update!
@@ -197,17 +257,11 @@ namespace FileManager
             // 
             // editToolStripMenuItem
             // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.추가ToolStripMenuItem});
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { }); 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 24);
             this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // 추가ToolStripMenuItem
-            // 
-            this.추가ToolStripMenuItem.Name = "추가ToolStripMenuItem";
-            this.추가ToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-            this.추가ToolStripMenuItem.Text = "추가";
+            
         }
     }
     ////////////////////////////////////////////////////////////////////

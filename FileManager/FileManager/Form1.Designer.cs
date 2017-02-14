@@ -103,18 +103,16 @@
             this.button.UseVisualStyleBackColor = true;
             this.button.Click += new System.EventHandler(this.button_Click);
             //
-            //UserEdit (Need Update!)
+            //Edit button in tabControl
             //
-            this.edit_2.추가ToolStripMenuItem.Click += new System.EventHandler(this.Edit_Add_Click);
+            this.userTab.tabControl.Padding = new System.Drawing.Point(12, 4);
+            this.userTab.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 
-            System.Windows.Forms.MenuItem edit_Delete, edit_ChangeName;
-
-            edit_Delete = new System.Windows.Forms.MenuItem
-                                ("삭제", new System.EventHandler(this.Edit_Delete_Click));
-            edit_ChangeName = new System.Windows.Forms.MenuItem
-                                ("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
-            this.userTab.tabControl.ContextMenu = new System.Windows.Forms.ContextMenu
-                                (new System.Windows.Forms.MenuItem[] { edit_Delete, edit_ChangeName });
+            this.userTab.tabControl.DrawItem += tabControl_DrawItem;
+            this.userTab.tabControl.MouseDown += tabControl_MouseDown;
+            this.userTab.tabControl.Selecting += tabControl_Selecting;
+            this.userTab.tabControl.HandleCreated += tabControl_HandleCreated;
+            //////////////////////////////////
             //
             //Form2
             //
