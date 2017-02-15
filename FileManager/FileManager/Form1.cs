@@ -15,75 +15,78 @@ namespace FileManager
     ////////////////////////////////////////////////////////////////////
     public partial class Form1 : Form
     {
-        private UserPanel userPanel = new UserPanel();
+        private List<Panel> panel_List = new List<Panel>();
+        private Panel panel_Click;
+        private int panel_Index = 0;
         private bool check_Init = false;
 
         public Form1()
         {
             InitializeComponent();
+            editMenu.MenuItems.Add("삭제", new System.EventHandler(this.Edit_Delete_Click));
+            editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
+            this.panel_List.Add(addPanel);
         }
-
-        //When click th button, show Form2//
-        private void button1_Click(object sender, EventArgs e)
+        //Make a Panel by Add_Panel//
+        private void addPanel_Click(object sender, MouseEventArgs e)
         {
-            Form2 form2 = new Form2();
-            form2.Show();
+            if (e.Button == MouseButtons.Left)
+            {
+                panel_Index = panel_List.IndexOf(addPanel);
+                this.panel_List.Insert(panel_Index, new System.Windows.Forms.Panel());
+                this.Locate_Panel();
+                this.Make_Panel();
+                this.panel_List[panel_Index].MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserPanel_Click);
+                this.panel_List[panel_Index].ContextMenu = editMenu;
+                this.Controls.Add(panel_List[panel_Index]);
+            }
         }
-        //EventHandler in Loading///////////
-        // ->Check Save Data////////////////
-        private void Form1_Load(object sender, EventArgs e)
+        //When click Panel, Run Form2//
+        private void UserPanel_Click(object sender, MouseEventArgs e)
         {
-            if (check_Init) //Have no Save Data
-                MakeInit();
-            /*
-              else
-                CallData();
-            */
+            panel_Click = sender as Panel;
+            if (e.Button == MouseButtons.Left)
+            {
+                Form2 form2 = new Form2();
+                form2.Show();
+            }
+            else
+            {
+                panel_Click.ContextMenu = editMenu;
+            }
         }
-        //Set Init_Function in Form1_Load///
-        private void MakeInit()
+        //Make a Panel//
+        private void Make_Panel()
         {
-            System.Windows.Forms.Label label_Init = new System.Windows.Forms.Label();
-            label_Init.Location = new System.Drawing.Point(240, 116);
-            label_Init.ForeColor = System.Drawing.SystemColors.ControlText;
-            label_Init.Name = "label_Init";
-            label_Init.Size = new System.Drawing.Size(118, 12);
-            label_Init.TabIndex = 0;
-            label_Init.Text = "Make new Manager";
-            this.Controls.Add(label_Init);
+            panel_List[panel_Index].BackColor = System.Drawing.SystemColors.ButtonShadow;
+            panel_List[panel_Index].Name = "Title" + panel_Index;
+            panel_List[panel_Index].Size = new System.Drawing.Size(567, 90);
+        }
+        //Location of Panels//
+        private void Locate_Panel()
+        {
+            for (int i = 0; i < panel_List.Count; i++)
+            {
+                this.panel_List[i].Location = new System.Drawing.Point(0, 90 * i);
+                this.panel_List[i].TabIndex = i;
+            }
+        }
+        //Edit_Delete//
+        private void Edit_Delete_Click(object sender,EventArgs e)
+        {
+            this.Controls.Remove(panel_Click);
+            this.panel_List.Remove(panel_Click);
+            this.Locate_Panel();
+        }
+        //Edit_NameChange//
+        private void Edit_NameChange_Click(object sender, EventArgs e)
+        {
+            //Need Update!
+            MessageBox.Show("" +panel_List.IndexOf(panel_Click) + " " + panel_Click.GetHashCode());
         }
         ///////////////////////////////////
-
     }
     ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////// 
-    // Class for Main Form1
-    ////////////////////////////////////////////////////////////////////
-    public class UserPanel //Make a new Panel 
-    {
-        public List<Panel> panelList = new List<Panel>();
-        private int panelCurrentIndex;
-
-        public int MakePanel() //Setting Panel
-        {
-            //
-            //Panel Setting
-            //
-            System.Windows.Forms.Panel panel = new System.Windows.Forms.Panel();
-            panelList.Add(panel);
-            panelCurrentIndex = panelList.Count - 1;
-
-            panel.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            panel.Location = new System.Drawing.Point(0, 90 * panelCurrentIndex);
-            panel.Name = "항목" + panelList.Count;
-            panel.Size = new System.Drawing.Size(583, 90);
-            panel.TabIndex = panelCurrentIndex;
-
-            return panelCurrentIndex;
-        }
-    }
     ////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////
@@ -107,20 +110,33 @@ namespace FileManager
                 userTab.tabControl.Controls.Add(tabPage1);
                 userTab.MakeTabPage(tabPage1);
                 tabPage1.Text = "";
+                this.MakeTitlePanel();
             }
         }
         //Form2's Set when Load//
         private void Form2_Load(object sender, EventArgs e)
         {
-            this.Controls.Add(userTab.tabControl); //Make TabControl in Form2
+            this.Controls.Add(userTab.tabControl); //Add TabControl in Form2
         }
-        //Form Close//
-        private void button_Click(object sender, EventArgs e)
+        //Form2_Title_Panel
+        private void MakeTitlePanel()
+        {
+            System.Windows.Forms.Panel title_Panel = new System.Windows.Forms.Panel();
+            title_Panel.Location = new System.Drawing.Point(0, 21);
+            title_Panel.Size = new System.Drawing.Size(40, 300);
+            title_Panel.BackColor = System.Drawing.SystemColors.ButtonShadow;
+            title_Panel.Name = "Title Panel";
+            title_Panel.TabIndex = 0;
+            title_Panel.Click += new System.EventHandler(this.Title_Panel_Click);
+            this.Controls.Add(title_Panel);
+        }
+        //Close Form2//
+        private void Title_Panel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
         //Edit Button in tab//
-          //Handle Click on Close Button and Add Button
+         //Handle Click on Close Button and Add Button
         private void tabControl_MouseDown(object sender, MouseEventArgs e)
         {
             var lastIndex = this.userTab.tabControl.TabCount - 1;
@@ -150,13 +166,13 @@ namespace FileManager
                 }
             }
         }
-          //Prevent selection last tab
+         //Prevent selection last tab
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (e.TabPageIndex == this.userTab.tabControl.TabCount - 1)
                 e.Cancel = true;
         }
-          //Draw Close Buttton and Add Button
+         //Draw Close Buttton and Add Button
         private void tabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
             var tabPage = this.userTab.tabControl.TabPages[e.Index];
@@ -166,7 +182,7 @@ namespace FileManager
             {
                 var addImage = Properties.Resources.AddButton_Image;
                 e.Graphics.DrawImage(addImage,
-                    tabRect.Left + (tabRect.Width - addImage.Width) ,
+                    tabRect.Left + (tabRect.Width - addImage.Width-1) ,
                     tabRect.Top + (tabRect.Height - addImage.Height));
             }
             else
@@ -251,7 +267,7 @@ namespace FileManager
             this.editToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(-6, -5);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(45, 28);
+            this.menuStrip.Size = new System.Drawing.Size(45, 26);
             this.menuStrip.TabIndex = 2;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -261,7 +277,6 @@ namespace FileManager
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 24);
             this.editToolStripMenuItem.Text = "Edit";
-            
         }
     }
     ////////////////////////////////////////////////////////////////////

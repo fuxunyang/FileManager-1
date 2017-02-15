@@ -78,10 +78,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\DeleteButton_Image.png" />
+    <None Include="Resources\AddButton_Image.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\AddButton_Image.png" />
+    <None Include="Resources\DeleteButton_Image.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

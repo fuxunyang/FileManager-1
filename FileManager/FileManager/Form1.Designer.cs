@@ -28,18 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.addPanel = new System.Windows.Forms.Panel();
+            //this.panel = new System.Windows.Forms.Panel();
+            this.editMenu = new System.Windows.Forms.ContextMenu();
             this.SuspendLayout();
             // 
-            // button1
+            // addPanel
             // 
-            this.button1.Location = new System.Drawing.Point(3, 80);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.addPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.addPanel.Location = new System.Drawing.Point(0, 0);
+            this.addPanel.Name = "addPanel";
+            this.addPanel.Size = new System.Drawing.Size(567, 30);
+            this.addPanel.TabIndex = 0;
+            this.addPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.addPanel_Click);
             // 
             // Form1
             // 
@@ -48,15 +49,16 @@
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(18, 720);
             this.ClientSize = new System.Drawing.Size(584, 261);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.addPanel);
             this.Name = "Form1";
             this.RightToLeftLayout = true;
             this.Text = "File Manager";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
         }
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel addPanel;
+        //private System.Windows.Forms.Panel panel;
+        private System.Windows.Forms.ContextMenu editMenu;
         #endregion
     }
 
@@ -88,31 +90,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button = new System.Windows.Forms.Button();
             this.edit_2 = new UserEdit();
             this.edit_2.menuStrip.SuspendLayout();
             this.SuspendLayout();
-            //
-            //Button2
-            //
-            this.button.Location = new System.Drawing.Point(3, 80);
-            this.button.Name = "button2";
-            this.button.Size = new System.Drawing.Size(75, 23);
-            this.button.TabIndex = 1;
-            this.button.Text = "button2";
-            this.button.UseVisualStyleBackColor = true;
-            this.button.Click += new System.EventHandler(this.button_Click);
             //
             //Edit button in tabControl
             //
             this.userTab.tabControl.Padding = new System.Drawing.Point(12, 4);
             this.userTab.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-
             this.userTab.tabControl.DrawItem += tabControl_DrawItem;
             this.userTab.tabControl.MouseDown += tabControl_MouseDown;
             this.userTab.tabControl.Selecting += tabControl_Selecting;
             this.userTab.tabControl.HandleCreated += tabControl_HandleCreated;
-            //////////////////////////////////
             //
             //Form2
             //
@@ -123,7 +112,6 @@
             this.Name = "Form2";
             this.Text = "sub FileManager";
             this.Load += new System.EventHandler(this.Form2_Load);
-            this.Controls.Add(this.button);
             // edit_2 is User Class.
             this.Controls.Add(this.edit_2.menuStrip);
             this.MainMenuStrip = this.edit_2.menuStrip;
@@ -131,7 +119,6 @@
             this.edit_2.menuStrip.PerformLayout();
             //
         }
-        private System.Windows.Forms.Button button;
         private UserEdit edit_2;
         #endregion
     }
