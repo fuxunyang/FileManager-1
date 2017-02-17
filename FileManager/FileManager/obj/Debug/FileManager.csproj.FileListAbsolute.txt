@@ -7,3 +7,4 @@ C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\De
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Debug\FileManager.exe
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Debug\FileManager.pdb
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Debug\FileManager.csprojResolveAssemblyReference.cache
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Debug\FileManager.Form1.resources

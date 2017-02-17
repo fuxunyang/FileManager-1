@@ -16,8 +16,13 @@ namespace FileManager
     public partial class Form1 : Form
     {
         private List<Panel> panel_List = new List<Panel>();
+        private List<Label> label_List = new List<Label>();
+
         private Panel panel_Click;
+        private Label label_Click;
+
         private int panel_Index = 0;
+
         private bool check_Init = false;
 
         public Form1()
@@ -32,57 +37,138 @@ namespace FileManager
         {
             if (e.Button == MouseButtons.Left)
             {
+                //
+                //Inser Label and Panel in List
+                //
                 panel_Index = panel_List.IndexOf(addPanel);
                 this.panel_List.Insert(panel_Index, new System.Windows.Forms.Panel());
-                this.Locate_Panel();
-                this.Make_Panel();
+                this.label_List.Insert(panel_Index, new System.Windows.Forms.Label());
+                //
+                //Handle Click Panel
+                //
                 this.panel_List[panel_Index].MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserPanel_Click);
+                this.label_List[panel_Index].MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserPanel_Click);
                 this.panel_List[panel_Index].ContextMenu = editMenu;
+                //
+                //Set panel and label in Form1
+                //
+                this.Form_SizeChange();
+                this.Make_Panel();
+                this.Locate_Panel();
                 this.Controls.Add(panel_List[panel_Index]);
+                this.panel_List[panel_Index].Controls.Add(label_List[panel_Index]);
+                this.AutoScrollPosition = new System.Drawing.Point(0, 30);
             }
         }
-        //When click Panel, Run Form2//
+        //When click Panel & Label, Run Form2//
         private void UserPanel_Click(object sender, MouseEventArgs e)
         {
-            panel_Click = sender as Panel;
-            if (e.Button == MouseButtons.Left)
+            //
+            // handling click event anywhere in a panel
+            //
+            if (sender is Panel)
             {
-                Form2 form2 = new Form2();
-                form2.Show();
+                panel_Click = sender as Panel;
+
+                // handling click event Right or Left Click.
+                if (e.Button == MouseButtons.Left)
+                {
+                    Form2 form2 = new Form2(label_List[panel_List.IndexOf(panel_Click)].Text);
+                    form2.Show();
+                }
+                else
+                {
+                    panel_Click.ContextMenu = editMenu;
+                }
             }
             else
             {
-                panel_Click.ContextMenu = editMenu;
+                label_Click = sender as Label;
+                panel_Click = panel_List[label_Click.TabIndex];
+
+                // handling click event Right or Left Click.
+                if (e.Button == MouseButtons.Left)
+                {
+                    Form2 form2 = new Form2(label_Click.Text);
+                    form2.Show();
+                }
+                else
+                {
+                    panel_Click.ContextMenu = editMenu;
+                }
             }
         }
         //Make a Panel//
         private void Make_Panel()
         {
+            //
+            //Panel
+            //
             panel_List[panel_Index].BackColor = System.Drawing.SystemColors.ButtonShadow;
-            panel_List[panel_Index].Name = "Title" + panel_Index;
-            panel_List[panel_Index].Size = new System.Drawing.Size(567, 90);
+            panel_List[panel_Index].Name = "제목" + panel_Index;
+            panel_List[panel_Index].Size = new System.Drawing.Size(201 - 24, 90);
+            //
+            //Label
+            //
+            label_List[panel_Index].AutoSize = true;
+            label_List[panel_Index].Location = new System.Drawing.Point(10, 70);
+            label_List[panel_Index].Name = "label" + panel_Index;
+            label_List[panel_Index].Size = new System.Drawing.Size(38, 12);
+            label_List[panel_Index].TabIndex = panel_Index;
+            label_List[panel_Index].Text = panel_List[panel_Index].Name;
         }
         //Location of Panels//
         private void Locate_Panel()
         {
-            for (int i = 0; i < panel_List.Count; i++)
+            int size = 0;
+            for (int index = 0; index < panel_List.Count; index++)
             {
-                this.panel_List[i].Location = new System.Drawing.Point(0, 90 * i);
-                this.panel_List[i].TabIndex = i;
+                size = (12 + 90) * index +12;
+                this.panel_List[index].Location = new System.Drawing.Point(12, size);
+                this.panel_List[index].TabIndex = index;
             }
         }
-        //Edit_Delete//
+        //Form size change dynamically//
+        private void Form_SizeChange()
+        {
+            if (panel_List.Count > 1)
+                this.ClientSize = new System.Drawing.Size(218, (102) * (panel_List.Count - 1) + 12);
+            else
+                this.ClientSize = new System.Drawing.Size(218, 42);
+            this.AutoScrollPosition = new System.Drawing.Point(0, 0);
+        }
+        //Edit-Delete//
         private void Edit_Delete_Click(object sender,EventArgs e)
         {
             this.Controls.Remove(panel_Click);
             this.panel_List.Remove(panel_Click);
+            this.Form_SizeChange();
             this.Locate_Panel();
         }
-        //Edit_NameChange//
+
+        //Edit-NameChange//
         private void Edit_NameChange_Click(object sender, EventArgs e)
         {
-            //Need Update!
-            MessageBox.Show("" +panel_List.IndexOf(panel_Click) + " " + panel_Click.GetHashCode());
+            this.panel_Click.Controls.Remove(label_List[panel_List.IndexOf(panel_Click)]);
+            textBox.Location = new System.Drawing.Point(10, 68);
+            textBox.Text = label_List[panel_List.IndexOf(panel_Click)].Text;
+            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Name_Change);
+            this.panel_Click.Controls.Add(textBox);
+        }
+        //Name_Change//
+        private void Name_Change(Object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                label_List[panel_List.IndexOf(panel_Click)].Text = textBox.Text;
+
+                this.panel_Click.Controls.Remove(textBox);
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                this.panel_Click.Controls.Remove(textBox);
+            }
+            this.panel_Click.Controls.Add(label_List[panel_List.IndexOf(panel_Click)]);
         }
         ///////////////////////////////////
     }
@@ -95,22 +181,24 @@ namespace FileManager
     public partial class Form2 : Form
     {
         private UserTab userTab = new UserTab();
+        private Panel title_Panel = new System.Windows.Forms.Panel();
+        private Label title_Label = new System.Windows.Forms.Label();
         private bool checkData = true;
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wp, IntPtr lp);
         private const int TCM_SETMINTABWIDTH = 0x1300 + 49;
 
-        public Form2()
+        public Form2(string title)
         {
             InitializeComponent();
+            this.MakeTitlePanel(title);
             if (checkData)
             {
                 System.Windows.Forms.TabPage tabPage1 = new System.Windows.Forms.TabPage();
                 userTab.tabControl.Controls.Add(tabPage1);
                 userTab.MakeTabPage(tabPage1);
                 tabPage1.Text = "";
-                this.MakeTitlePanel();
             }
         }
         //Form2's Set when Load//
@@ -119,16 +207,30 @@ namespace FileManager
             this.Controls.Add(userTab.tabControl); //Add TabControl in Form2
         }
         //Form2_Title_Panel
-        private void MakeTitlePanel()
+        private void MakeTitlePanel(string title)
         {
-            System.Windows.Forms.Panel title_Panel = new System.Windows.Forms.Panel();
+            //
+            //Panel
+            //
             title_Panel.Location = new System.Drawing.Point(0, 21);
-            title_Panel.Size = new System.Drawing.Size(40, 300);
+            title_Panel.Size = new System.Drawing.Size(40, 240);
             title_Panel.BackColor = System.Drawing.SystemColors.ButtonShadow;
-            title_Panel.Name = "Title Panel";
+            title_Panel.Name = title;
             title_Panel.TabIndex = 0;
             title_Panel.Click += new System.EventHandler(this.Title_Panel_Click);
             this.Controls.Add(title_Panel);
+            //
+            //Label
+            //
+            title_Label.Location = new System.Drawing.Point(20, 42);
+            title_Label.AutoSize = true;
+            title_Label.Name = title;
+            title_Label.Size = new System.Drawing.Size(1,38);
+            title_Label.Text = "";
+            for (int i = 0; i< title.Length; i ++)
+                title_Label.Text = title_Label.Text + title[i] + "\n\n";
+            this.title_Label.Click += new System.EventHandler(this.Title_Panel_Click);
+            this.title_Panel.Controls.Add(title_Label);
         }
         //Close Form2//
         private void Title_Panel_Click(object sender, EventArgs e)
