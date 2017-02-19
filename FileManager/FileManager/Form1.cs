@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace FileManager
 {
@@ -15,22 +16,107 @@ namespace FileManager
     ////////////////////////////////////////////////////////////////////
     public partial class Form1 : Form
     {
-        private List<Panel> panel_List = new List<Panel>();
+        //
+        //To put Control Instance on the List
+        //
+        private List<Panel> panel_List = new List<Panel>(); 
         private List<Label> label_List = new List<Label>();
-
+        //
+        //To show the currently clicked Control Instance
+        //        
         private Panel panel_Click;
         private Label label_Click;
-
         private int panel_Index = 0;
-
-        private bool check_Init = false;
-
+        //
+        //To access the data text file
+        //
+        private StreamWriter write_txt;
+        private StreamReader read_txt;
+        private string data_Path = System.IO.Directory.GetCurrentDirectory();
+        //
+        //To check if data exists
+        //
+        private bool check_Init = true;
+        
         public Form1()
         {
             InitializeComponent();
-            editMenu.MenuItems.Add("삭제", new System.EventHandler(this.Edit_Delete_Click));
-            editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
-            this.panel_List.Add(addPanel);
+            this.Data_Check();
+            //if have save data
+            if (check_Init == false)
+            {
+                editMenu.MenuItems.Add("삭제", new System.EventHandler(this.Edit_Delete_Click));
+                editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
+                this.panel_List.Add(addPanel);
+                this.Load_Form();
+                this.read_txt.Close();
+                this.write_txt = new StreamWriter(new FileStream(data_Path + @"\Setting.txt", FileMode.Append, FileAccess.Write));
+            }
+            //if have no data
+            else
+            {
+                editMenu.MenuItems.Add("삭제", new System.EventHandler(this.Edit_Delete_Click));
+                editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
+                this.panel_List.Add(addPanel);
+            }
+        }
+        //Data Check//
+        private void Data_Check()
+        {
+            data_Path = System.IO.Directory.GetParent(System.IO.Directory.GetParent(data_Path).ToString()).ToString() + @"\Data";
+            if (File.Exists(data_Path + @"\Setting.txt"))
+            {
+                this.check_Init = false;
+                this.read_txt = new StreamReader(new FileStream(data_Path + @"\Setting.txt", FileMode.Open, FileAccess.Read));
+            }
+            else
+            {
+                this.write_txt = new StreamWriter(new FileStream(data_Path + @"\Setting.txt", FileMode.Append, FileAccess.Write));
+            }
+        }
+        //Load Form1//
+        private void Load_Form()
+        {
+            List<string> title_List = new List<string>();
+            string title = "";
+            int count =0;
+            string line = read_txt.ReadLine();
+            while (line != null)
+            {
+                for(int i = 2; i < line.Length; i++)
+                {
+                    title = title + line[i];
+                }
+                title_List.Add(title);
+                title = "";
+                count++;
+                line = read_txt.ReadLine();
+            }
+            for(int index = 0; index < title_List.Count ; index++)
+            {
+                //
+                //Insert Label and Panel in List
+                //
+                this.panel_List.Insert(index, new System.Windows.Forms.Panel());
+                this.label_List.Insert(index, new System.Windows.Forms.Label());
+                //
+                //Handle Click Panel
+                //
+                this.panel_List[index].MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserPanel_Click);
+                this.label_List[index].MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserPanel_Click);
+                this.panel_List[index].ContextMenu = editMenu;
+                //
+                //Set panel and label in Form1
+                //
+                this.panel_List[index].Name = title_List[index];
+                this.Set_Panel(index);
+                this.Form_SizeChange();
+                this.Locate_Panel();
+                this.Controls.Add(panel_List[index]);
+                this.panel_List[index].Controls.Add(label_List[index]);
+                this.AutoScrollPosition = new System.Drawing.Point(0, 30);
+            }
+            this.read_txt.Close();
         }
         //Make a Panel by Add_Panel//
         private void addPanel_Click(object sender, MouseEventArgs e)
@@ -38,7 +124,7 @@ namespace FileManager
             if (e.Button == MouseButtons.Left)
             {
                 //
-                //Inser Label and Panel in List
+                //Insert Label and Panel in List
                 //
                 panel_Index = panel_List.IndexOf(addPanel);
                 this.panel_List.Insert(panel_Index, new System.Windows.Forms.Panel());
@@ -52,12 +138,19 @@ namespace FileManager
                 //
                 //Set panel and label in Form1
                 //
+                this.panel_List[panel_Index].Name = "제목" + panel_Index;
                 this.Form_SizeChange();
-                this.Make_Panel();
+                this.Set_Panel(panel_Index);
                 this.Locate_Panel();
                 this.Controls.Add(panel_List[panel_Index]);
                 this.panel_List[panel_Index].Controls.Add(label_List[panel_Index]);
                 this.AutoScrollPosition = new System.Drawing.Point(0, 30);
+                //
+                // Panel_Directory
+                //
+                Directory.CreateDirectory(data_Path + @"\" + label_List[panel_Index].Text);
+                this.write_txt.WriteLine("" + panel_Index + " " + label_List[panel_Index].Text);
+                this.write_txt.Flush();
             }
         }
         //When click Panel & Label, Run Form2//
@@ -66,7 +159,7 @@ namespace FileManager
             //
             // handling click event anywhere in a panel
             //
-            if (sender is Panel)
+            if (sender is Panel) // if click on the panel except for the label
             {
                 panel_Click = sender as Panel;
 
@@ -81,7 +174,7 @@ namespace FileManager
                     panel_Click.ContextMenu = editMenu;
                 }
             }
-            else
+            else // if click a lable on the panel
             {
                 label_Click = sender as Label;
                 panel_Click = panel_List[label_Click.TabIndex];
@@ -98,33 +191,32 @@ namespace FileManager
                 }
             }
         }
-        //Make a Panel//
-        private void Make_Panel()
+        //Set a Panel//
+        private void Set_Panel(int index)
         {
             //
-            //Panel
+            // Panel
             //
-            panel_List[panel_Index].BackColor = System.Drawing.SystemColors.ButtonShadow;
-            panel_List[panel_Index].Name = "제목" + panel_Index;
-            panel_List[panel_Index].Size = new System.Drawing.Size(201 - 24, 90);
+            this.panel_List[index].BackColor = System.Drawing.SystemColors.ButtonShadow;
+            this.panel_List[index].Size = new System.Drawing.Size(177, 90);
             //
-            //Label
+            // Label
             //
-            label_List[panel_Index].AutoSize = true;
-            label_List[panel_Index].Location = new System.Drawing.Point(10, 70);
-            label_List[panel_Index].Name = "label" + panel_Index;
-            label_List[panel_Index].Size = new System.Drawing.Size(38, 12);
-            label_List[panel_Index].TabIndex = panel_Index;
-            label_List[panel_Index].Text = panel_List[panel_Index].Name;
+            this.label_List[index].AutoSize = true;
+            this.label_List[index].Location = new System.Drawing.Point(10, 70);
+            this.label_List[index].Name = "label" + index;
+            this.label_List[index].Size = new System.Drawing.Size(38, 12);
+            this.label_List[index].TabIndex = index;
+            this.label_List[index].Text = panel_List[index].Name;
         }
         //Location of Panels//
         private void Locate_Panel()
         {
-            int size = 0;
+            int Y = 0;
             for (int index = 0; index < panel_List.Count; index++)
             {
-                size = (12 + 90) * index +12;
-                this.panel_List[index].Location = new System.Drawing.Point(12, size);
+                Y = (12 + 90) * index +12;
+                this.panel_List[index].Location = new System.Drawing.Point(12, Y);
                 this.panel_List[index].TabIndex = index;
             }
         }
@@ -132,43 +224,92 @@ namespace FileManager
         private void Form_SizeChange()
         {
             if (panel_List.Count > 1)
-                this.ClientSize = new System.Drawing.Size(218, (102) * (panel_List.Count - 1) + 12);
+                this.ClientSize = new System.Drawing.Size(218, (102) * (panel_List.Count - 1) + 54);
             else
-                this.ClientSize = new System.Drawing.Size(218, 42);
+                this.ClientSize = new System.Drawing.Size(218, 54);
             this.AutoScrollPosition = new System.Drawing.Point(0, 0);
+            this.AutoScrollMinSize = new System.Drawing.Size(18, (102) * (panel_List.Count - 1) + 55);
         }
-        //Edit-Delete//
+        //Edit - Delete//
         private void Edit_Delete_Click(object sender,EventArgs e)
         {
+            int current_click_index = panel_List.IndexOf(panel_Click);
+            //
+            // Delete Data
+            //
+            Directory.Delete(data_Path + @"\" + label_List[current_click_index].Text, true);
+            this.write_txt.Close();
+            this.write_txt = new StreamWriter(data_Path + @"\Setting.txt");
+            for (int i = 0; i < panel_List.Count - 1; i++)
+            {
+                if(i != current_click_index)
+                    write_txt.WriteLine("" + i + " " + label_List[i].Text);
+            }
+            this.write_txt.Flush();
+            //
+            // Delete Panel
+            //
             this.Controls.Remove(panel_Click);
             this.panel_List.Remove(panel_Click);
+            this.label_List.RemoveAt(current_click_index);
             this.Form_SizeChange();
             this.Locate_Panel();
         }
-
-        //Edit-NameChange//
+        //Edit - NameChange//
         private void Edit_NameChange_Click(object sender, EventArgs e)
         {
             this.panel_Click.Controls.Remove(label_List[panel_List.IndexOf(panel_Click)]);
-            textBox.Location = new System.Drawing.Point(10, 68);
-            textBox.Text = label_List[panel_List.IndexOf(panel_Click)].Text;
-            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Name_Change);
+            this.textBox = new System.Windows.Forms.TextBox();
+            this.textBox.Location = new System.Drawing.Point(10, 68);
+            this.textBox.Text = label_List[panel_List.IndexOf(panel_Click)].Text;
+            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Name_Change); //Data Change algorithm is in Name_Change method.
             this.panel_Click.Controls.Add(textBox);
         }
         //Name_Change//
-        private void Name_Change(Object sender, KeyEventArgs e)
+        private void Name_Change(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            //
+            //Press Enter
+            //
+            if (e.KeyData == Keys.Enter) 
             {
-                label_List[panel_List.IndexOf(panel_Click)].Text = textBox.Text;
+                if (label_List[panel_List.IndexOf(panel_Click)].Text != textBox.Text)
+                {
+                    // Change Data & Label //
+                    Directory.Move(data_Path + @"\" + label_List[panel_List.IndexOf(panel_Click)].Text, data_Path + @"\" + textBox.Text);
+                    this.label_List[panel_List.IndexOf(panel_Click)].Text = textBox.Text;
+                    this.write_txt.Close();
+                    this.write_txt = new StreamWriter(data_Path + @"\Setting.txt");
+                    for (int i = 0; i < panel_List.Count - 1; i++)
+                    {
+                        write_txt.WriteLine("" + i + " " + label_List[i].Text);
+                    }
+                    this.write_txt.Flush();
+                    this.panel_Click.Controls.Remove(textBox);
+                }
+                else
+                {
+                    this.panel_Click.Controls.Remove(textBox);
+                }
+            }
+            //
+            //Press ESC
+            //
+            else if (e.KeyData == Keys.Escape) 
+            {
+                this.panel_Click.Controls.Remove(textBox);
+            }
 
-                this.panel_Click.Controls.Remove(textBox);
-            }
-            else if (e.KeyCode == Keys.Delete)
-            {
-                this.panel_Click.Controls.Remove(textBox);
-            }
             this.panel_Click.Controls.Add(label_List[panel_List.IndexOf(panel_Click)]);
+            this.write_txt.Close();
+        }
+        //Form1_Close Event//
+        private void Form1_Close(object sender, FormClosingEventArgs e)
+        {
+            if (panel_List.Count == 1)
+            {
+                File.Delete(data_Path + @"\Setting.txt");
+            }
         }
         ///////////////////////////////////
     }

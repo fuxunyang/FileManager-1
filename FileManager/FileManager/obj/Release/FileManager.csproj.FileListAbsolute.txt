@@ -1,0 +1,8 @@
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\bin\Release\FileManager.exe.config
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\bin\Release\FileManager.exe
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\bin\Release\FileManager.pdb
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.Form1.resources
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.Properties.Resources.resources
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.csproj.GenerateResource.Cache
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.exe
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.pdb

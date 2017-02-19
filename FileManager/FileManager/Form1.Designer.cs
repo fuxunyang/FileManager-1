@@ -29,10 +29,8 @@
         private void InitializeComponent()
         {
             this.addPanel = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
             this.textBox = new System.Windows.Forms.TextBox();
             this.editMenu = new System.Windows.Forms.ContextMenu();
-            this.addPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // addPanel
@@ -40,29 +38,32 @@
             this.addPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.addPanel.Location = new System.Drawing.Point(12, 12);
             this.addPanel.Name = "addPanel";
-            this.addPanel.Size = new System.Drawing.Size(201-24, 30);
+            this.addPanel.Size = new System.Drawing.Size(177, 30);
             this.addPanel.TabIndex = 0;
             this.addPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.addPanel_Click);
-            //
             // 
-            //
-            //
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(0, 0);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(100, 21);
+            this.textBox.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size(18, 127);
+            this.AutoScrollMinSize = new System.Drawing.Size(18, 55);
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(218, 42);
+            this.ClientSize = new System.Drawing.Size(218, 54);
             this.Controls.Add(this.addPanel);
             this.Name = "Form1";
             this.Opacity = 0.8D;
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.RightToLeftLayout = true;
             this.Text = "File Manager";
-            this.addPanel.ResumeLayout(false);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_Close);
             this.ResumeLayout(false);
         }
 
@@ -70,8 +71,6 @@
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.ContextMenu editMenu;
         #endregion
-
-        private System.Windows.Forms.Label label1;
     }
 
     partial class Form2
