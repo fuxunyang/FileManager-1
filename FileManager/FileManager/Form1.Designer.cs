@@ -28,14 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.addPanel = new System.Windows.Forms.Panel();
             this.textBox = new System.Windows.Forms.TextBox();
             this.editMenu = new System.Windows.Forms.ContextMenu();
+            this.editMenu_2 = new System.Windows.Forms.ContextMenu();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // addPanel
             // 
-            this.addPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.addPanel.Location = new System.Drawing.Point(12, 12);
             this.addPanel.Name = "addPanel";
             this.addPanel.Size = new System.Drawing.Size(177, 30);
@@ -51,26 +53,32 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size(18, 55);
-            this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(218, 54);
+            this.ClientSize = new System.Drawing.Size(201, 54);
             this.Controls.Add(this.addPanel);
+            this.ContextMenu = this.editMenu_2;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.TopMost = true;
+            this.Location = global::FileManager.Properties.Settings.Default.Location;
             this.Name = "Form1";
             this.Opacity = 0.8D;
-            this.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.RightToLeftLayout = true;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "File Manager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_Close);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form_Mouse_Down);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form_Mouse_Move);
+            this.MouseEnter += new System.EventHandler(this.Form_Mouse_Enter);
+            this.MouseLeave += new System.EventHandler(this.Form_Mouse_Leave);
             this.ResumeLayout(false);
         }
 
         private System.Windows.Forms.Panel addPanel;
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.ContextMenu editMenu;
+        private System.Windows.Forms.ContextMenu editMenu_2;
         #endregion
+
+        private System.Windows.Forms.Timer timer;
     }
 
     partial class Form2
@@ -103,16 +111,23 @@
         {
             this.edit_2 = new UserEdit();
             this.edit_2.menuStrip.SuspendLayout();
+            this.editMenu = new System.Windows.Forms.ContextMenu();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.SuspendLayout();
             //
             //Edit button in tabControl
             //
-            this.userTab.tabControl.Padding = new System.Drawing.Point(12, 4);
-            this.userTab.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            this.userTab.tabControl.DrawItem += tabControl_DrawItem;
-            this.userTab.tabControl.MouseDown += tabControl_MouseDown;
-            this.userTab.tabControl.Selecting += tabControl_Selecting;
-            this.userTab.tabControl.HandleCreated += tabControl_HandleCreated;
+            this.tabControl.Location = new System.Drawing.Point(39, -2);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(547, 264);
+            this.tabControl.TabIndex = 0;
+            this.tabControl.Padding = new System.Drawing.Point(12, 4);
+            this.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.tabControl.DrawItem += tabControl_DrawItem;
+            this.tabControl.MouseDown += tabControl_MouseDown;
+            this.tabControl.Selecting += tabControl_Selecting;
+            this.tabControl.HandleCreated += tabControl_HandleCreated;
             //
             //Form2
             //
@@ -122,7 +137,7 @@
             this.ClientSize = new System.Drawing.Size(584, 261);
             this.Name = "Form2";
             this.Text = "sub FileManager";
-            this.Load += new System.EventHandler(this.Form2_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Closing);
             // edit_2 is User Class.
             this.Controls.Add(this.edit_2.menuStrip);
             this.MainMenuStrip = this.edit_2.menuStrip;
@@ -130,6 +145,9 @@
             this.edit_2.menuStrip.PerformLayout();
             //
         }
+
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.ContextMenu editMenu;
         private UserEdit edit_2;
         #endregion
     }

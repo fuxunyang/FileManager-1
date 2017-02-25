@@ -16,7 +16,8 @@ namespace FileManager
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Form form1 = new Form1();
+            Application.Run(form1);
         }
     }
 }
