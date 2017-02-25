@@ -452,7 +452,6 @@ namespace FileManager
         //
         // Get State
         //
-        private string form1_Path;
         private string data_Path;
         private string dir_file_Path;
         private int lastIndex;
@@ -468,8 +467,7 @@ namespace FileManager
         {
             InitializeComponent();
 
-            this.form1_Path = path;
-            this.data_Path = form1_Path;
+            this.data_Path = path;
             this.editMenu.MenuItems.Add("불러오기", new System.EventHandler(this.Edit_Load_Click));
             this.editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
             this.Controls.Add(tabControl); //Add TabControl in Form2
