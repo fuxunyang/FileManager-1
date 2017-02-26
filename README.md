@@ -21,12 +21,16 @@ Let's start The FileManager Project! - 2017/02/12 --- Complete - 2017/02/25
   Second, add folders associated with that category with the add button. Keep in mind that you should not put folders that are too deep in depth. Memory efficiency is poor due to unnecessary work.
   
   Also, you can delete the folders with delete button.
+  
+#3 Click the File!
+
+  If you want to run a specific file, just double-click on it. 
  
-#3 Exit the Program.
+#4 Exit the Program.
   
   If you want to exit the File Maneger, then you just click Exit Button in Right Click.
   
   When the Program exit, your setup data is automatically saved. The data is saved in Data Folder.
   
-#4 The data folder must be in the same path as the File Manager program!!!!!!!!!!!!
+#5 The data folder must be in the same path as the File Manager program!!!!!!!!!!!!
 
