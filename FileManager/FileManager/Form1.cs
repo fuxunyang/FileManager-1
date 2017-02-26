@@ -11,8 +11,7 @@ using System.Runtime.InteropServices;
 using System.Media;
 using System.IO;
 
-
-/// Started on February 24, 2017.
+/// Started on February 12, 2017.
 /// Version 1.0 was completed on February 25, 2017.
 /// by Dev NamKiHyun...
 
@@ -81,7 +80,7 @@ namespace FileManager
         //Data Check//
         private void Data_Check()
         {
-            data_Path = System.IO.Directory.GetParent(System.IO.Directory.GetParent(data_Path).ToString()).ToString() + @"\Data";
+            data_Path = data_Path + @"\Data";
             if (File.Exists(data_Path + @"\Setting.txt"))
             {
                 this.check_Init = false;
