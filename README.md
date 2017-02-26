@@ -32,5 +32,5 @@ Let's start The FileManager Project! - 2017/02/12 --- Complete - 2017/02/25
   
   When the Program exit, your setup data is automatically saved. The data is saved in Data Folder.
   
-#5 The data folder must be in the same path as the File Manager program!!!!!!!!!!!!
+#5 The data folder must be in the same path as the File Manager program!!!!!!!!!!!
 
