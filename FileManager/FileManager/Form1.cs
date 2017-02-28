@@ -41,9 +41,7 @@ namespace FileManager
         //
         //State of Form1
         //
-        private Color add_Color = ColorTranslator.FromHtml("#4285F4");
-        private Color panel_Color = ColorTranslator.FromHtml("#999999");
-        private Color form_Color = ColorTranslator.FromHtml("#181717");
+        private UserColor user_Color = new UserColor();
         private Rectangle form_Rectange;
         private bool check_Init = true;
         private bool form1_open = true;
@@ -55,12 +53,19 @@ namespace FileManager
         public Form1()
         {
             InitializeComponent();
+            //
+            // Set Menu function
+            //
             editMenu.MenuItems.Add("삭제", new System.EventHandler(this.Edit_Delete_Click));
             editMenu.MenuItems.Add("이름 바꾸기", new System.EventHandler(this.Edit_NameChange_Click));
             editMenu.MenuItems.Add("종료", new System.EventHandler(this.Form_End));
             this.editMenu_2.MenuItems.Add("종료", new System.EventHandler(this.Form_End));
-            this.addPanel.BackColor = add_Color;
-            this.BackColor = form_Color;
+            this.editMenu_2.MenuItems.Add("색 변경", new System.EventHandler(this.Form1_Color));
+            //
+            // Set Color
+            //
+            this.Set_Color();
+
             this.Data_Check();
             //if have save data
             if (check_Init == false)
@@ -133,7 +138,7 @@ namespace FileManager
             //
             // Panel
             //
-            this.panel_List[index].BackColor = panel_Color;//System.Drawing.SystemColors.ButtonShadow;
+            this.panel_List[index].BackColor = user_Color.panel_Color[Properties.Settings.Default.Color];
             this.panel_List[index].Size = new System.Drawing.Size(177, 90);
             this.panel_List[index].MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form_Mouse_Move);
             //
@@ -146,6 +151,20 @@ namespace FileManager
             this.label_List[index].TabIndex = index;
             this.label_List[index].Text = panel_List[index].Name;
             this.label_List[index].MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form_Mouse_Move);
+        }
+        // Set Color //
+        private void Set_Color()
+        {
+            if (Properties.Settings.Default.Color == 0)
+            {
+                this.BackColor = this.user_Color.form_Color[0];
+                this.addPanel.BackColor = this.user_Color.add_Color[0];
+            }
+            else
+            {
+                this.BackColor = this.user_Color.form_Color[1];
+                this.addPanel.BackColor = this.user_Color.add_Color[1];
+            }
         }
         //Location of Panels//
         private void Locate_Panel()
@@ -226,7 +245,14 @@ namespace FileManager
                     Form2 form2 = new Form2(label_List[panel_List.IndexOf(panel_Click)].Text, path_Click);
                     form2.TopMost = true;
                     form2.Show();
-                    form2.Location = this.Location;
+                    if ((this.Location.X + form2.Size.Width) > System.Windows.Forms.SystemInformation.VirtualScreen.Width)
+                    {
+                        form2.Location = new Point(System.Windows.Forms.SystemInformation.VirtualScreen.Width - form2.Size.Width, this.Location.Y);
+                    }
+                    else
+                    {
+                        form2.Location = this.Location;
+                    }
                 }
                 else
                 {
@@ -246,6 +272,14 @@ namespace FileManager
                     form2.TopMost = true;
                     form2.Show();
                     form2.Location = this.Location;
+                    if ((this.Location.X + form2.Size.Width) > System.Windows.Forms.SystemInformation.VirtualScreen.Width)
+                    {
+                        form2.Location = new Point(System.Windows.Forms.SystemInformation.VirtualScreen.Width - form2.Size.Width, this.Location.Y);
+                    }
+                    else
+                    {
+                        form2.Location = this.Location;
+                    }
                 }
                 else
                 {
@@ -404,6 +438,30 @@ namespace FileManager
                 }
             }
         }
+        //-----Form1_Color Event---------//
+        private void Form1_Color(object sender, EventArgs e)
+        {
+            if(Properties.Settings.Default.Color == 0)
+            {
+                this.BackColor = user_Color.form_Color[1];
+                foreach(Panel item in panel_List)
+                {
+                    item.BackColor = user_Color.panel_Color[1];
+                }
+                this.addPanel.BackColor = user_Color.add_Color[1];
+                Properties.Settings.Default.Color = 1;
+            }
+            else
+            {
+                this.BackColor = user_Color.form_Color[0];
+                foreach (Panel item in panel_List)
+                {
+                    item.BackColor = user_Color.panel_Color[0];
+                }
+                this.addPanel.BackColor = user_Color.add_Color[0];
+                Properties.Settings.Default.Color = 0;
+            }
+        }
         //-----Form1_Close Event---------//
         private void Form1_Close(object sender, FormClosingEventArgs e)
         {
@@ -449,11 +507,12 @@ namespace FileManager
         private StreamWriter write_txt;
         private StreamReader read_txt;
         //
-        // Get State
+        // Form2 State
         //
         private string data_Path;
         private string dir_file_Path;
         private int lastIndex;
+        private Point scrollbar;
         private bool check_Init = true;
         //
         // For Add and Close Button
@@ -592,12 +651,23 @@ namespace FileManager
             //
             //TreeView Setting
             //
+            this.scrollbar = this.treeView_List[lastIndex].AutoScrollOffset;
             this.treeView_List[lastIndex].Location = new System.Drawing.Point(0, 0);
             this.treeView_List[lastIndex].Name = "TreeView" + tab_List[lastIndex].TabIndex;
-            this.treeView_List[lastIndex].Size = new System.Drawing.Size(547, 237);
+            this.treeView_List[lastIndex].Size = new System.Drawing.Size(500, 237);
             this.treeView_List[lastIndex].TabIndex = tab_List[lastIndex].TabIndex;
             this.treeView_List[lastIndex].Scrollable = true;
             this.tab_List[lastIndex].Controls.Add(treeView_List[lastIndex]);
+            //
+            //VScrollBar 
+            //
+            /*
+            System.Windows.Forms.VScrollBar vScrollBar = new VScrollBar();
+            vScrollBar.Size = new Size(10, 237);
+            vScrollBar.Location = new Point(527, 0);
+            vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.VScroll_Scroll);
+            this.treeView_List[lastIndex].Controls.Add(vScrollBar);
+            */
         }
 
         //Sub_Directory in TreeView//
@@ -608,7 +678,7 @@ namespace FileManager
             {
                 TreeNode present_node = new TreeNode(dir2.Name);
                 node.Nodes.Add(present_node);
-                foreach(var file in dir2.GetFiles())
+                foreach(FileInfo file in dir2.GetFiles())
                 {
                     dir_file_Path = file.DirectoryName;
                     present_node.Nodes.Add(file.Name);
@@ -858,6 +928,42 @@ namespace FileManager
             this.Dispose();
             System.GC.Collect();
         }
+        //Short Key//
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if(!base.ProcessCmdKey(ref msg, keyData))
+            {
+                //Short Key - ESC//
+                if(keyData.Equals(Keys.Escape))
+                {
+                    this.write_txt.Close();
+                    this.Dispose();
+                    System.GC.Collect();
+                    return true;
+                }
+                //Short Key - Tab//
+                else if (keyData.Equals(Keys.Tab))
+                {
+                    if (this.tabControl.SelectedIndex != tabControl.TabCount - 2)
+                    {
+                        this.tabControl.SelectedTab = this.tabControl.TabPages[this.tabControl.SelectedIndex + 1];
+                    }
+                    else
+                    {
+                        this.tabControl.SelectedTab = this.tabControl.TabPages[0];
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
         //Close Form2//
         private void Form_Closing(object sender, FormClosingEventArgs e)
         {
@@ -912,6 +1018,24 @@ namespace FileManager
             MessageBox.Show("Started on February 12, 2017.\nVersion 1.0 was completed on February 25, 2017.\n\nby Dev NamKiHyun...");
         }
     }
+    public class UserColor 
+    {
+        public List<Color> form_Color = new List<Color>();
+        public List<Color> panel_Color = new List<Color>();
+        public List<Color> add_Color = new List<Color>();
+
+        public UserColor()
+        {
+            this.form_Color.Add(ColorTranslator.FromHtml("#181717")); //Dark
+            this.form_Color.Add(ColorTranslator.FromHtml("#e7e7e7")); //Bright
+            this.panel_Color.Add(ColorTranslator.FromHtml("#999999"));//Gray
+            this.panel_Color.Add(ColorTranslator.FromHtml("#80397B"));//Purple
+            this.add_Color.Add(ColorTranslator.FromHtml("#4285F4"));  //Blue
+            this.add_Color.Add(ColorTranslator.FromHtml("#A4C639")); //Green
+            this.add_Color.Add(ColorTranslator.FromHtml("#FF3366"));  //Red
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
 }

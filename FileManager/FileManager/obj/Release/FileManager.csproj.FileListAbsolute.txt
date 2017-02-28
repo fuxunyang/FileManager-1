@@ -6,3 +6,4 @@ C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Re
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.csproj.GenerateResource.Cache
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.exe
 C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.pdb
+C:\Users\Nam Ki Hyun\Documents\GitHub\FileManager\FileManager\FileManager\obj\Release\FileManager.csprojResolveAssemblyReference.cache

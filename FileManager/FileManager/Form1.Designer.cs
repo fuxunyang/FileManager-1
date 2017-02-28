@@ -50,6 +50,10 @@
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(100, 21);
             this.textBox.TabIndex = 0;
+            //
+            // Color
+            //
+
             // 
             // Form1
             // 
@@ -133,8 +137,9 @@
             //
             this.components = new System.ComponentModel.Container();
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 261);
+            this.ClientSize = new System.Drawing.Size(542, 261);
             this.Name = "Form2";
             this.Text = "sub FileManager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Closing);
