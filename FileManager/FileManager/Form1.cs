@@ -658,6 +658,16 @@ namespace FileManager
             this.treeView_List[lastIndex].TabIndex = tab_List[lastIndex].TabIndex;
             this.treeView_List[lastIndex].Scrollable = true;
             this.tab_List[lastIndex].Controls.Add(treeView_List[lastIndex]);
+            //
+            //VScrollBar 
+            //
+            /*
+            System.Windows.Forms.VScrollBar vScrollBar = new VScrollBar();
+            vScrollBar.Size = new Size(10, 237);
+            vScrollBar.Location = new Point(527, 0);
+            vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.VScroll_Scroll);
+            this.treeView_List[lastIndex].Controls.Add(vScrollBar);
+            */
         }
 
         //Sub_Directory in TreeView//
@@ -687,16 +697,7 @@ namespace FileManager
             // When node double clicked, start program.
             if (e.Node.Text.Contains("."))
             {
-                try
-                {
-                    string dir_Path = tabControl.SelectedTab.Name.Replace(treeView_List[tabControl.SelectedIndex].Nodes[0].Text, null);
-                    string file_Path = e.Node.FullPath;
-                    System.Diagnostics.Process.Start(dir_Path + file_Path);
-                }
-                catch
-                {
-                    MessageBox.Show("파일이 존재하지 않거나 경로를 찾지 못했습니다.");
-                }
+                System.Diagnostics.Process.Start(tabControl.SelectedTab.Name + @"\" + e.Node.FullPath.Replace(treeView_List[tabControl.SelectedIndex].Nodes[0].Text, null));
             }
         }
         //Edit Button in tab//
